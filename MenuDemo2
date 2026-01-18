@@ -1,0 +1,82 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Random;
+
+public class MenuDemo extends JFrame {
+
+    private JTextArea textArea;
+    private JMenuItem greenHueItem;
+    private JScrollPane scrollPane;
+
+    public MenuDemo() {
+
+        setTitle("Menu Demo Application");
+        setSize(500, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        // Text area
+        textArea = new JTextArea();
+        textArea.setOpaque(false);
+        scrollPane = new JScrollPane(textArea);
+        add(scrollPane, BorderLayout.CENTER);
+
+        // Menu bar
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menu = new JMenu("Options");
+
+        JMenuItem dateTimeItem = new JMenuItem("Print Date/Time");
+        JMenuItem writeFileItem = new JMenuItem("Write to log.txt");
+        greenHueItem = new JMenuItem("Random Green Hue");
+        JMenuItem exitItem = new JMenuItem("Exit");
+
+        menu.add(dateTimeItem);
+        menu.add(writeFileItem);
+        menu.add(greenHueItem);
+        menu.add(exitItem);
+        menuBar.add(menu);
+        setJMenuBar(menuBar);
+
+        // Menu item 1: Print date/time
+        dateTimeItem.addActionListener(e -> {
+            String now = LocalDateTime.now()
+                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            textArea.setText(now);
+        });
+
+        // Menu item 2: Write text to log.txt
+        writeFileItem.addActionListener(e -> {
+            try (FileWriter writer = new FileWriter("log.txt")) {
+                writer.write(textArea.getText());
+                JOptionPane.showMessageDialog(this, "Text written to log.txt");
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Error writing file: " + ex.getMessage());
+            }
+        });
+
+        // Menu item 3: Random green hue
+        greenHueItem.addActionListener(e -> {
+            Random rand = new Random();
+            int green = rand.nextInt(256);  // 0–255
+            Color randomGreen = new Color(0, green, 0);
+
+            scrollPane.setBackground(randomGreen);
+            scrollPane.getViewport().setBackground(randomGreen);
+            greenHueItem.setText("Random Green Hue (G=" + green + ")");
+        });
+
+        // Menu item 4: Exit
+        exitItem.addActionListener(e -> System.exit(0));
+
+        setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(MenuDemo::new);
+    }
+}
